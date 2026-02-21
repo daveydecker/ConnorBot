@@ -50,7 +50,7 @@ async def connor(ctx):
     await ctx.send(content=f"<@{CONNOR_ID}> get on the game bro", file=discord.File(pickImage()))
 
 @bot.command()
-async def weather(ctx, *, arg1):
+async def weather(ctx, *, arg1="Atlanta"):
     response = getWeather(arg1)
     data = response.json()
     if response.status_code == 200:
