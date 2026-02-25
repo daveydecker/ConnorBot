@@ -1,3 +1,4 @@
+from homeassistant_api import Client
 from discord.ext import commands
 import discord
 import os
@@ -9,6 +10,8 @@ import json
 load_dotenv()
 imgExtension = ("png", "jpeg", "jpg", "gif")
 images = list()
+HA_URL = os.getenv('HA_URL')
+ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
 BOT_Token = os.getenv('BOT_TOKEN')
 CONNOR_ID = 705138845036970078
@@ -59,4 +62,17 @@ async def weather(ctx, *, arg1="Atlanta"):
         await ctx.send(content=f"{data['error']['message']}")
     else:
         await ctx.send(content="Yo something went wrong lowkey")
+@bot.command()
+async def cat(ctx, *, arg1="weight"):
+    with Client(HA_URL, ACCESS_TOKEN) as client:
+        if arg1.lower() == "weight":
+            weightSensor = client.get_state(entity_id="sensor.millie_weight")
+            await ctx.send(f"The weight of the cat is {weightSensor.state}")
+        if arg1.lower() == "visits":
+            visitsCount = client.get_state(entity_id="sensor.millie_visits_today")
+            times = "times" if int(visitsCount.state) > 1 or int(visitsCount.state) == 0 else "time"
+            await ctx.send(f"The cat has visited the litter bot {visitsCount.state} {times} today")
+        if arg1.lower() == "cycle":
+            client.trigger_service(domain="vacuum", service="start", entity_id="vacuum.litter_robot_4_litter_box")
+            await ctx.send("Cycling litter box")
 bot.run(BOT_Token)
