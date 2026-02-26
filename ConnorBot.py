@@ -69,11 +69,11 @@ async def cat(ctx, *, arg1="weight"):
             if arg1.lower() == "weight":
                 weightSensor = client.get_state(entity_id="sensor.millie_weight")
                 await ctx.send(f"The weight of el cato is {weightSensor.state} lbs")
-            if arg1.lower() == "visits":
+            elif arg1.lower() == "visits":
                 visitsCount = client.get_state(entity_id="sensor.millie_visits_today")
                 times = "times" if int(visitsCount.state) > 1 or int(visitsCount.state) == 0 else "time"
                 await ctx.send(f"El cato has visited the litter box {visitsCount.state} {times} today")
-            if arg1.lower() == "cycle":
+            elif arg1.lower() == "cycle":
                 statusCode = client.get_state(entity_id="sensor.litter_robot_4_status_code")
                 if statusCode.state == "rdy":
                     client.trigger_service(domain="vacuum", service="start", entity_id="vacuum.litter_robot_4_litter_box")
@@ -82,6 +82,8 @@ async def cat(ctx, *, arg1="weight"):
                     await ctx.send("Cannot cycle. El cato is inside the box")
                 else:
                     await ctx.send("Litter Box cannot be cycled.")
+            else:
+                await ctx.send("Invalid command")
     except:
         await ctx.send("An error has occured")
 bot.run(BOT_Token)
