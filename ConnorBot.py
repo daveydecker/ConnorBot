@@ -72,7 +72,7 @@ async def cat(ctx, *, arg1="weight"):
             if arg1.lower() == "visits":
                 visitsCount = client.get_state(entity_id="sensor.millie_visits_today")
                 times = "times" if int(visitsCount.state) > 1 or int(visitsCount.state) == 0 else "time"
-                await ctx.send(f"El cato has visited the litter bot {visitsCount.state} {times} today")
+                await ctx.send(f"El cato has visited the litter box {visitsCount.state} {times} today")
             if arg1.lower() == "cycle":
                 statusCode = client.get_state(entity_id="sensor.litter_robot_4_status_code")
                 if statusCode.state == "rdy":
