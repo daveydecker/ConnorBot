@@ -15,8 +15,13 @@ ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
 WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
 BOT_Token = os.getenv('BOT_TOKEN')
 CONNOR_ID = 705138845036970078
+sensorFile = "sensor.en.json"
 
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
+
+
+with open(sensorFile, 'r') as file:
+    sensorData = json.load(file)
 
 def appendImages(directory="./images"):
     for i in os.listdir(directory):
@@ -81,7 +86,7 @@ async def cat(ctx, *, arg1="weight"):
                 elif statusCode.state == "cd" or statusCode.state == "csi":
                     await ctx.send("Cannot cycle. El gato is inside the box")
                 else:
-                    await ctx.send("Litter Box cannot be cycled.")
+                    await ctx.send(f"Litter Box cannot be cycled. Reason: {sensorData["state"]["litterrobot__status_code"][statusCode.state]}")
             else:
                 await ctx.send("Invalid command")
     except:
