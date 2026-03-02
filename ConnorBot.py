@@ -49,8 +49,8 @@ async def on_message(message):
                 print(f"{file_path} downloaded")
     await bot.process_commands(message)
 @bot.command()
-async def connor(ctx):
-    await ctx.send(content=f"<@{CONNOR_ID}> get on the game bro", file=discord.File(pickImage()))
+async def connor(ctx, *, arg1="get on the game bro"):
+    await ctx.send(content=f"<@{CONNOR_ID}> {arg1}", file=discord.File(pickImage()))
 
 @bot.command()
 async def weather(ctx, *, arg1="Atlanta"):
