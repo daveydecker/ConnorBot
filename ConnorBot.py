@@ -36,7 +36,26 @@ def getWeather(location="Atlanta"):
     api_url = f"http://api.weatherapi.com/v1/current.json?key={WEATHER_TOKEN}&q={_location}&aqi=no"
     return requests.get(api_url)
 
-
+def downloadSkin(url):
+    response = requests.get(url, stream=True)
+    response.raise_for_status()
+    with open("fortSkin.png", "wb") as file:
+        for chunk in response.iter_content(chunk_size=8192):
+                file.write(chunk)
+def appendCharacters(fortData):
+    fortItems = fortData['data']
+    characters = []
+    for item in fortItems:
+        if (item.get('type', {}).get('value') == "outfit") and item.get('images', {}).get('featured') :
+            characters.append(item)
+    return characters
+def findCharacter(fortData, name):
+    fortItems = fortData['data']
+    characters = []
+    for item in fortItems:
+        if (item.get('type', {}).get('value') == "outfit") and item.get('images', {}).get('featured') and item.get('name').lower() == name :
+            characters.append(item)
+    return characters
 @bot.event
 async def on_ready():
     appendImages()
@@ -91,4 +110,30 @@ async def cat(ctx, *, arg1="weight"):
                 await ctx.send("Invalid command")
     except:
         await ctx.send("An error has occured")
+@bot.command()
+async def fortnite(ctx, *, arg1="random"):
+    fortResponse = requests.get("https://fortnite-api.com/v2/cosmetics/br")
+    if (fortResponse.status_code != 200):
+        await ctx.send(f"Something went wrong. status code: {fortResponse.status_code}")
+        return
+    fortData = fortResponse.json()
+    if (arg1.lower() == "random"):
+        characters = appendCharacters(fortData)
+        randomChar = random.choice(characters)
+        url = randomChar['images']['featured']
+        downloadSkin(url)
+        await ctx.send(f"Here is your random Fortnite Skin:\nName: {randomChar['name']}\nDescription: {randomChar['description']}\n{randomChar['introduction']['text']}", file=discord.File("fortSkin.png"))
+        os.remove("fortSkin.png")
+    else:
+        characters = findCharacter(fortData, arg1.lower())
+        if len(characters) <= 0:
+            await ctx.send("Skin could not be found")
+        else:
+            character = characters[0]
+            url = character['images']['featured']
+            downloadSkin(url)
+            await ctx.send(f"Here is your Fortnite Skin:\nName: {character['name']}\nDescription: {character['description']}\n{character['introduction']['text']}", file=discord.File("fortSkin.png"))
+            os.remove("fortSkin.png")
+    
+    
 bot.run(BOT_Token)
