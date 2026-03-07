@@ -7,6 +7,7 @@ import uuid
 from dotenv import load_dotenv
 import requests
 import json
+import difflib
 load_dotenv()
 imgExtension = ("png", "jpeg", "jpg", "gif")
 images = list()
@@ -42,23 +43,23 @@ def downloadSkin(url):
     with open("fortSkin.png", "wb") as file:
         for chunk in response.iter_content(chunk_size=8192):
                 file.write(chunk)
+
 def appendCharacters(fortData):
     fortItems = fortData['data']
     characters = []
+    names = []
     for item in fortItems:
-        if (item.get('type', {}).get('value') == "outfit") and item.get('images', {}).get('featured') :
+        name = item['name'].lower()
+        bad = ["tbd", "set_"]
+        if (item.get('type', {}).get('value') == "outfit") and (item.get('images', {}).get('featured') or item.get('images', {}).get('icon')) and (not any(substring in name for substring in bad)):
             characters.append(item)
-    return characters
-def findCharacter(fortData, name):
-    fortItems = fortData['data']
-    characters = []
-    for item in fortItems:
-        if (item.get('type', {}).get('value') == "outfit") and item.get('images', {}).get('featured') and item.get('name').lower() == name :
-            characters.append(item)
-    return characters
+            names.append(name)
+    return characters, names
+
 @bot.event
 async def on_ready():
     appendImages()
+
 @bot.event
 async def on_message(message):
     if message.author == bot.user:
@@ -110,30 +111,34 @@ async def cat(ctx, *, arg1="weight"):
                 await ctx.send("Invalid command")
     except:
         await ctx.send("An error has occured")
+
 @bot.command()
 async def fortnite(ctx, *, arg1="random"):
     fortResponse = requests.get("https://fortnite-api.com/v2/cosmetics/br")
     if (fortResponse.status_code != 200):
         await ctx.send(f"Something went wrong. status code: {fortResponse.status_code}")
         return
+    
     fortData = fortResponse.json()
+    characters, names = appendCharacters(fortData)
     if (arg1.lower() == "random"):
-        characters = appendCharacters(fortData)
         randomChar = random.choice(characters)
-        url = randomChar['images']['featured']
+        url = randomChar['images']['featured'] if randomChar.get('images', {}).get('featured') else randomChar['images']['icon']
         downloadSkin(url)
         await ctx.send(f"Here is your random Fortnite Skin:\nName: {randomChar['name']}\nDescription: {randomChar['description']}\n{randomChar['introduction']['text']}", file=discord.File("fortSkin.png"))
         os.remove("fortSkin.png")
     else:
-        characters = findCharacter(fortData, arg1.lower())
-        if len(characters) <= 0:
-            await ctx.send("Skin could not be found")
-        else:
-            character = characters[0]
-            url = character['images']['featured']
+        matches = difflib.get_close_matches(arg1.lower(), names, n=1, cutoff=0.6)
+        if matches:
+            characterName = matches[0]
+            index = names.index(characterName)
+            character = characters[index]
+            url = character['images']['featured'] if character.get('images', {}).get('featured') else character['images']['icon']
             downloadSkin(url)
             await ctx.send(f"Here is your Fortnite Skin:\nName: {character['name']}\nDescription: {character['description']}\n{character['introduction']['text']}", file=discord.File("fortSkin.png"))
             os.remove("fortSkin.png")
+        else:
+            await ctx.send("Skin could not be found")
     
     
 bot.run(BOT_Token)
