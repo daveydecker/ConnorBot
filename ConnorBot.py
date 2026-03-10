@@ -139,6 +139,10 @@ async def fortnite(ctx, *, arg1="random"):
             os.remove("fortSkin.png")
         else:
             await ctx.send("Skin could not be found")
-    
+
+@bot.command()
+async def ip(ctx):
+    r = requests.get("https://icanhazip.com")
+    await ctx.send(r.text)
     
 bot.run(BOT_Token)
