@@ -75,7 +75,10 @@ async def on_message(message):
     await bot.process_commands(message)
 @bot.command()
 async def connor(ctx, *, arg1="get on the game bro"):
-    await ctx.send(content=f"<@{CONNOR_ID}> {arg1}", file=discord.File(pickImage()))
+    if arg1 == "images":
+        await ctx.send(f"There is currently {len(images)} images of me saved")
+    else:
+        await ctx.send(content=f"<@{CONNOR_ID}> {arg1}", file=discord.File(pickImage()))
 
 @bot.command()
 async def weather(ctx, *, arg1="Atlanta"):
