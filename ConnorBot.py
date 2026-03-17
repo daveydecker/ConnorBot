@@ -76,7 +76,8 @@ async def on_message(message):
 @bot.command()
 async def connor(ctx, *, arg1="get on the game bro"):
     if arg1 == "images":
-        await ctx.send(f"There is currently {len(images)} images of me saved")
+        imagetense = "images" if len(images) != 1 else "image"
+        await ctx.send(f"There is currently {len(images)} {imagetense} of me saved")
     else:
         await ctx.send(content=f"<@{CONNOR_ID}> {arg1}", file=discord.File(pickImage()))
 
