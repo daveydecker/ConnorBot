@@ -51,7 +51,7 @@ def appendCharacters(fortData):
     for item in fortItems:
         name = item['name'].lower()
         bad = ["tbd", "set_"]
-        if (item.get('type', {}).get('value') == "outfit") and (item.get('images', {}).get('featured') or item.get('images', {}).get('icon')) and (not any(substring in name for substring in bad)):
+        if (item != None) and (name != "null") and (item.get('type', {}).get('value') == "outfit") and (item.get('images', {}).get('featured') or item.get('images', {}).get('icon')) and (not any(substring in name for substring in bad)):
             characters.append(item)
             names.append(name)
     return characters, names
