@@ -8,6 +8,8 @@ from dotenv import load_dotenv
 import requests
 import json
 import difflib
+from datetime import datetime
+from dateutil.relativedelta import relativedelta
 load_dotenv()
 imgExtension = ("png", "jpeg", "jpg", "gif")
 images = list()
@@ -148,5 +150,11 @@ async def fortnite(ctx, *, arg1="random"):
 async def ip(ctx):
     r = requests.get("https://icanhazip.com")
     await ctx.send(r.text)
-    
+
+@bot.command()
+async def timetil30(ctx):
+    dateFinal = datetime(2035, 8, 30, 0, 0, 0)
+    dateNow = datetime.now()
+    timetil30 = relativedelta(dateFinal, dateNow)
+    await ctx.send(f"Connor Sherman will be turning 30 in {timetil30.years} years, {timetil30.months} months, {timetil30.days} days, {timetil30.hours} hours, {timetil30.minutes} minutes, {timetil30.seconds} seconds")
 bot.run(BOT_Token)
