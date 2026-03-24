@@ -156,5 +156,5 @@ async def timetil30(ctx):
     dateFinal = datetime(2035, 8, 30, 0, 0, 0)
     dateNow = datetime.now()
     timetil30 = relativedelta(dateFinal, dateNow)
-    await ctx.send(f"Connor Sherman will be turning 30 in {timetil30.years} years, {timetil30.months} months, {timetil30.days} days, {timetil30.hours} hours, {timetil30.minutes} minutes, {timetil30.seconds} seconds")
+    await ctx.send(f"Connor Sherman will be turning 30 in {timetil30.years} years, {timetil30.months} months, {timetil30.days} days, {timetil30.hours} hours, {timetil30.minutes} minutes, {timetil30.seconds} seconds", file="bunny.png")
 bot.run(BOT_Token)
