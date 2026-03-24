@@ -156,5 +156,11 @@ async def timetil30(ctx):
     dateFinal = datetime(2035, 8, 30, 0, 0, 0)
     dateNow = datetime.now()
     timetil30 = relativedelta(dateFinal, dateNow)
-    await ctx.send(f"Connor Sherman will be turning 30 in {timetil30.years} years, {timetil30.months} months, {timetil30.days} days, {timetil30.hours} hours, {timetil30.minutes} minutes, {timetil30.seconds} seconds", file=discord.File("bunny.png"))
+    years = "year" if timetil30.years == 1 else "years"
+    months = "month" if timetil30.months == 1 else "months"
+    days = "day" if timetil30.days == 1 else "days"
+    hours = "hour" if timetil30.hours == 1 else "hours"
+    minutes = "minute" if timetil30.minutes == 1 else "minutes"
+    seconds = "second" if timetil30.seconds == 1 else "seconds"
+    await ctx.send(f"Connor Sherman will be turning 30 in {timetil30.years} {years}, {timetil30.months} {months}, {timetil30.days} {days}, {timetil30.hours} {hours}, {timetil30.minutes} {minutes}, {timetil30.seconds} {seconds}", file=discord.File("bunny.png"))
 bot.run(BOT_Token)
