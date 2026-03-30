@@ -173,6 +173,6 @@ async def timetil(ctx, arg1="30"):
         await ctx.send("Enter a number")
 
 @bot.command()
-async def OW(ctx):
+async def ow(ctx):
     await ctx.send(f"<@{CONNOR_ID}>", file=discord.File("ConnorOverwatch.gif"))
 bot.run(BOT_Token)
