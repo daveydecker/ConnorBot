@@ -9,6 +9,7 @@ import requests
 import json
 import difflib
 from datetime import datetime
+from zoneinfo import ZoneInfo
 from dateutil.relativedelta import relativedelta
 load_dotenv()
 imgExtension = ("png", "jpeg", "jpg", "gif")
@@ -99,7 +100,12 @@ async def cat(ctx, *, arg1="weight"):
         with Client(HA_URL, ACCESS_TOKEN) as client:
             if arg1.lower() == "weight":
                 weightSensor = client.get_state(entity_id="sensor.millie_weight")
-                await ctx.send(f"The weight of el gato is {weightSensor.state} lbs")
+                lastUpdated = weightSensor.last_updated
+                lastUpdated = datetime.fromisoformat(str(lastUpdated))
+                dateNow = datetime.now(ZoneInfo("America/New_York"))
+                diff = relativedelta(dateNow, lastUpdated)
+                minutes = diff.days * 1440 + diff.hours * 60 + diff.minutes
+                await ctx.send(f"The weight of el gato is {weightSensor.state} lbs. Last updated: {minutes} minutes ago")
             elif arg1.lower() == "visits":
                 visitsCount = client.get_state(entity_id="sensor.millie_visits_today")
                 times = "times" if int(visitsCount.state) > 1 or int(visitsCount.state) == 0 else "time"
@@ -115,7 +121,8 @@ async def cat(ctx, *, arg1="weight"):
                     await ctx.send(f"Litter Box cannot be cycled. Reason: {sensorData["state"]["litterrobot__status_code"][statusCode.state]}")
             else:
                 await ctx.send("Invalid command")
-    except:
+    except Exception as e:
+        print(e)
         await ctx.send("An error has occured")
 
 @bot.command()
