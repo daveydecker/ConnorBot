@@ -100,11 +100,10 @@ async def cat(ctx, *, arg1="weight"):
         with Client(HA_URL, ACCESS_TOKEN) as client:
             if arg1.lower() == "weight":
                 weightSensor = client.get_state(entity_id="sensor.millie_weight")
-                lastUpdated = weightSensor.last_updated
-                lastUpdated = datetime.fromisoformat(str(lastUpdated))
+                lastUpdated = datetime.fromisoformat(str(weightSensor.last_updated))
                 dateNow = datetime.now(ZoneInfo("America/New_York"))
                 diff = relativedelta(dateNow, lastUpdated)
-                minutes = diff.days * 1440 + diff.hours * 60 + diff.minutes
+                minutes = diff.years * 525600 + diff.months * 43800 + diff.weeks * 10080 + diff.days * 1440 + diff.hours * 60 + diff.minutes
                 await ctx.send(f"The weight of el gato is {weightSensor.state} lbs. Last updated: {minutes} minutes ago")
             elif arg1.lower() == "visits":
                 visitsCount = client.get_state(entity_id="sensor.millie_visits_today")
