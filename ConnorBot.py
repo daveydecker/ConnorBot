@@ -226,7 +226,7 @@ async def sale(ctx, *, title):
     for game in games:
         if i > 4:
             break
-        embed.add_field(name=game['external'], value=number_emojis[i], inline=False)
+        embed.add_field(name=f"{number_emojis[i]} {game['external']}", value=" ", inline=False)
         gameIds.append(game['gameID'])
         gameTitles.append(game['external'])
         i += 1
