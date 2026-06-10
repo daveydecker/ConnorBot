@@ -103,6 +103,7 @@ async def cat(ctx, *, arg1="weight"):
             if arg1.lower() == "weight":
                 weightSensor = client.get_state(entity_id="sensor.millie_weight")
                 lastUpdated = datetime.fromisoformat(str(weightSensor.last_updated))
+                print(weightSensor.last_updated)
                 dateNow = datetime.now(ZoneInfo("America/New_York"))
                 diff = relativedelta(dateNow, lastUpdated)
                 minutes = diff.years * 525600 + diff.months * 43800 + diff.weeks * 10080 + diff.days * 1440 + diff.hours * 60 + diff.minutes
