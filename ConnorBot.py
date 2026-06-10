@@ -103,12 +103,12 @@ async def cat(ctx, *, arg1="weight"):
             if arg1.lower() == "weight":
                 weightSensor = client.get_state(entity_id="sensor.millie_weight")
                 lastUpdated = datetime.fromisoformat(str(weightSensor.last_updated))
-                print(weightSensor.last_updated)
-                dateNow = datetime.now(ZoneInfo("America/New_York"))
-                diff = relativedelta(dateNow, lastUpdated)
-                minutes = diff.years * 525600 + diff.months * 43800 + diff.weeks * 10080 + diff.days * 1440 + diff.hours * 60 + diff.minutes
-                tense = "minute" if minutes == 1 else "minutes"
-                await ctx.send(f"The weight of el gato is {weightSensor.state} lbs. Last updated: {minutes} {tense} ago")
+                unix = int(lastUpdated.timestamp())
+                #dateNow = datetime.now(ZoneInfo("America/New_York"))
+                #diff = relativedelta(dateNow, lastUpdated)
+                #minutes = diff.years * 525600 + diff.months * 43800 + diff.weeks * 10080 + diff.days * 1440 + diff.hours * 60 + diff.minutes
+                #tense = "minute" if minutes == 1 else "minutes"
+                await ctx.send(f"The weight of el gato is {weightSensor.state} lbs. Last updated: <t:{unix}:R>")
             elif arg1.lower() == "visits":
                 visitsCount = client.get_state(entity_id="sensor.millie_visits_today")
                 times = "times" if int(visitsCount.state) > 1 or int(visitsCount.state) == 0 else "time"
