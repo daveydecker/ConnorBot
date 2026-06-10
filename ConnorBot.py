@@ -11,6 +11,7 @@ import difflib
 from datetime import datetime
 from zoneinfo import ZoneInfo
 from dateutil.relativedelta import relativedelta
+import asyncio
 load_dotenv()
 imgExtension = ("png", "jpeg", "jpg", "gif")
 images = list()
@@ -20,6 +21,7 @@ WEATHER_TOKEN = os.getenv('WEATHER_TOKEN')
 BOT_Token = os.getenv('BOT_TOKEN')
 CONNOR_ID = 705138845036970078
 sensorFile = "sensor.en.json"
+number_emojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣"]
 
 bot = commands.Bot(command_prefix="!", intents=discord.Intents.all())
 
@@ -182,4 +184,95 @@ async def timetil(ctx, arg1="30"):
 @bot.command()
 async def ow(ctx):
     await ctx.send(f"<@{CONNOR_ID}>", file=discord.File("ConnorOverwatch.gif"))
+
+# Game Deal Block
+def search(title):
+    headers = {"User-Agent": "ConnorBot/1.0 (daveydecker3.0@gmail.com)"}
+    params = {"title": title}
+    r = requests.get(url="https://www.cheapshark.com/api/1.0/games", headers=headers, params=params)
+    return r
+
+def searchId(id):
+    headers = {"User-Agent": "ConnorBot/1.0 (deveydecker3.0@gmail.com)"}
+    params = {"id": id}
+    r = requests.get(url="https://www.cheapshark.com/api/1.0/games", headers=headers, params=params)
+    return r
+
+def storesMap():
+    headers = {"User-Agent": "ConnorBot/1.0 (deveydecker3.0@gmail.com)"}
+    r = requests.get(url="https://www.cheapshark.com/api/1.0/stores", headers=headers)
+    stores = r.json()
+    map = {}
+    for store in stores:
+        map[store['storeID']] = store['storeName']
+    return map
+
+@bot.command()
+async def sale(ctx, *, title):
+    response = search(title)
+    games = response.json()
+    if len(games) == 0:
+        await ctx.send("No games found")
+        return
+    embed = discord.Embed(
+        title="Found Games",
+        description="React with the game you want to search the sale of",
+        color=discord.Color.blue()
+    )
+    gameIds = []
+    gameTitles = []
+    pickedIndex = None
+    i = 0
+    for game in games:
+        if i > 4:
+            break
+        embed.add_field(name=game['external'], value=number_emojis[i], inline=False)
+        gameIds.append(game['gameID'])
+        gameTitles.append(game['external'])
+        i += 1
+    msg = await ctx.send(embed=embed)
+    valid_reactions = []
+    for j in range(i):
+        await asyncio.gather(msg.add_reaction(number_emojis[j]))
+        valid_reactions.append(number_emojis[j])
+    def check(reaction, user):
+        return (user == ctx.author
+                and str(reaction.emoji) in valid_reactions
+                and reaction.message.id == msg.id
+                )
+    try:
+        reaction, user = await bot.wait_for("reaction_add", timeout=30.0, check=check)
+        k = 0
+        for item in number_emojis:
+            if str(reaction.emoji) == item:
+                pickedIndex = k
+                break
+            k += 1
+    except TimeoutError:
+        await msg.delete()
+        return
+    if pickedIndex == None:
+        await ctx.send("No game selected")
+        return
+    title = gameTitles[pickedIndex]
+    GameID = gameIds[pickedIndex]
+    await msg.delete()
+    response = searchId(GameID)
+    game_id = response.json()
+    embed = discord.Embed(
+        title=f"Results for {title}",
+        color=discord.Color.blue()
+    )
+    embed.add_field(name=f"Cheapest Price Ever: ${game_id['cheapestPriceEver']['price']}", value=" ", inline=False)
+    deals = {}
+    for deal in game_id['deals']:
+        if len(deals) > 5 or float(deal['savings']) == 0:
+            break
+        deals[deal['storeID']] = deal['price']
+    if len(deals) == 0:
+        embed.add_field(name="No deals found", value=" ", inline=False)
+    map = storesMap()
+    for GameID in deals:
+        embed.add_field(name=f"${deals[GameID]} at {map[GameID]}", value=" ", inline=False)
+    await ctx.send(embed=embed)
 bot.run(BOT_Token)
