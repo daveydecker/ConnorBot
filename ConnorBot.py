@@ -263,7 +263,8 @@ async def sale(ctx, *, title):
         title=f"Results for {title}",
         color=discord.Color.blue()
     )
-    embed.add_field(name=f"Cheapest Price Ever: ${game_id['cheapestPriceEver']['price']}", value=" ", inline=False)
+    embed.add_field(name=f"Cheapest Price Ever: ${game_id['cheapestPriceEver']['price']} was <t:{game_id['cheapestPriceEver']['date']}:R>", 
+                    value=" ", inline=False)
     deals = {}
     for deal in game_id['deals']:
         if len(deals) > 5 or float(deal['savings']) == 0:
