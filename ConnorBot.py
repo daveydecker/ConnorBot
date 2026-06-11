@@ -231,40 +231,43 @@ async def sale(ctx, *, title):
         gameIds.append(game['gameID'])
         gameTitles.append(game['external'])
         i += 1
-    msg = await ctx.send(embed=embed)
-    valid_reactions = []
-    for j in range(i):
-        await asyncio.gather(msg.add_reaction(number_emojis[j]))
-        valid_reactions.append(number_emojis[j])
-    def check(reaction, user):
-        return (user == ctx.author
-                and str(reaction.emoji) in valid_reactions
-                and reaction.message.id == msg.id
-                )
-    try:
-        reaction, user = await bot.wait_for("reaction_add", timeout=30.0, check=check)
-        k = 0
-        for item in number_emojis:
-            if str(reaction.emoji) == item:
-                pickedIndex = k
-                break
-            k += 1
-    except TimeoutError:
+    if len(games) > 1:
+        msg = await ctx.send(embed=embed)
+        valid_reactions = []
+        for j in range(i):
+            await asyncio.gather(msg.add_reaction(number_emojis[j]))
+            valid_reactions.append(number_emojis[j])
+        def check(reaction, user):
+            return (user == ctx.author
+                    and str(reaction.emoji) in valid_reactions
+                    and reaction.message.id == msg.id
+                    )
+        try:
+            reaction, user = await bot.wait_for("reaction_add", timeout=30.0, check=check)
+            k = 0
+            for item in number_emojis:
+                if str(reaction.emoji) == item:
+                    pickedIndex = k
+                    break
+                k += 1
+        except TimeoutError:
+            await msg.delete()
+            return
+        if pickedIndex == None:
+            await ctx.send("No game selected")
+            return
         await msg.delete()
-        return
-    if pickedIndex == None:
-        await ctx.send("No game selected")
-        return
+    else:
+        pickedIndex = 0
     title = gameTitles[pickedIndex]
     GameID = gameIds[pickedIndex]
-    await msg.delete()
     response = searchId(GameID)
     game_id = response.json()
     embed = discord.Embed(
         title=f"Results for {title}",
         color=discord.Color.blue()
     )
-    embed.add_field(name=f"Cheapest Price Ever: ${game_id['cheapestPriceEver']['price']} was <t:{game_id['cheapestPriceEver']['date']}:R>", 
+    embed.add_field(name=f"Cheapest Price Ever: ${game_id['cheapestPriceEver']['price']} was <t:{game_id['cheapestPriceEver']['date']}:R>",
                     value=" ", inline=False)
     deals = {}
     for deal in game_id['deals']:
