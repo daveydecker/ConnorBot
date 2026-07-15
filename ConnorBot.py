@@ -30,6 +30,7 @@ with open(sensorFile, 'r') as file:
     sensorData = json.load(file)
 
 def appendImages(directory="./images"):
+    images.clear()
     for i in os.listdir(directory):
         if i.endswith(imgExtension):
             images.append(directory + "/" + i)
