@@ -186,7 +186,6 @@ async def timetil(ctx, arg1="30"):
 @bot.command()
 async def ow(ctx):
     num = random.randint(1, 2)
-    print(num)
     if num == 1:
         file = "ConnorOverwatch.gif"
     else:
