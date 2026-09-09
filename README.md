@@ -4,7 +4,6 @@ A multi-purpose Discord bot built with `discord.py` that aggregates several exte
 
 ![Python](https://img.shields.io/badge/python-3.11%2B-blue)
 ![discord.py](https://img.shields.io/badge/discord.py-2.x-5865F2)
-![License](https://img.shields.io/badge/license-MIT-green)
 
 ---
 
@@ -56,8 +55,8 @@ All credentials — bot token, Home Assistant URL and access token, weather API 
 **Requirements:** Python 3.11+
 
 ```bash
-git clone https://github.com/<your-username>/connorbot.git
-cd connorbot
+git clone https://github.com/daveydecker/ConnorBot.git
+cd ConnorBot
 pip install -r requirements.txt
 ```
 
@@ -70,10 +69,16 @@ ACCESS_TOKEN=your_home_assistant_long_lived_token
 WEATHER_TOKEN=your_weatherapi_key
 ```
 
+Create the image storage directory the bot reads at startup:
+
+```bash
+mkdir images
+```
+
 Then run:
 
 ```bash
-python bot.py
+python ConnorBot.py
 ```
 
 The bot requires the **Message Content** privileged intent, enabled in the Discord Developer Portal under your application's Bot settings.
